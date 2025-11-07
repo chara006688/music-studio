@@ -13,8 +13,9 @@
 
 ![Screenshot](https://via.placeholder.com/800x400/008080/FFFFFF?text=Music+Studio+Screenshot)
 
-</div>
+
 **⚠️本项目100% AI制作|⚠️100% AI**
+</div>
 ---
 
 ## 📋 目录
