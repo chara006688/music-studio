@@ -1,0 +1,291 @@
+.effects-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a0f3e 0%, #0f0624 100%);
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  overflow-y: auto;
+}
+
+.effects-window {
+  max-width: 1000px;
+  width: 100%;
+  margin: 2rem auto;
+}
+
+.effects-content {
+  padding: 1.5rem;
+  background: #008080;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.source-panel {
+  background: #c0c0c0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid #fff;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+}
+
+.source-panel h3 {
+  margin: 0 0 1rem 0;
+  font-size: 0.8rem;
+  color: #000080;
+}
+
+.source-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.source-btn, .file-upload-btn, .play-btn {
+  background: linear-gradient(to bottom, #dfdfdf, #c0c0c0);
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  color: #000;
+  transition: all 0.1s;
+}
+
+.source-btn:hover, .file-upload-btn:hover, .play-btn:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #fff, #dfdfdf);
+}
+
+.source-btn:active, .file-upload-btn:active, .play-btn:active:not(:disabled) {
+  border: 2px solid #000;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.source-btn.active {
+  background: linear-gradient(to bottom, #ff6b9d, #ff4081);
+  color: #fff;
+  border-color: #ff4081;
+}
+
+.play-btn.active {
+  background: linear-gradient(to bottom, #00ff9d, #00d47e);
+  color: #000;
+  font-weight: bold;
+}
+
+.play-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #808080;
+}
+
+.file-info {
+  margin-top: 0.5rem;
+  font-size: 0.6rem;
+  color: #00ff00;
+}
+
+/* FX Modules */
+.fx-module {
+  background: #c0c0c0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid #fff;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+}
+
+.fx-module h3 {
+  margin: 0 0 1rem 0;
+  font-size: 0.7rem;
+  color: #000080;
+}
+
+.fx-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.fx-header h3 {
+  margin: 0;
+}
+
+.fx-controls {
+  display: grid;
+  gap: 1rem;
+}
+
+.fx-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fx-control label {
+  font-size: 0.6rem;
+  color: #000;
+}
+
+.fx-control input[type="range"] {
+  width: 100%;
+  height: 20px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+.fx-control input[type="range"]::-webkit-slider-track {
+  width: 100%;
+  height: 8px;
+  background: #808080;
+  border: 1px solid #000;
+}
+
+.fx-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(to bottom, #dfdfdf, #c0c0c0);
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  cursor: pointer;
+}
+
+.fx-control input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: #808080;
+  border: 1px solid #000;
+}
+
+.fx-control input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(to bottom, #dfdfdf, #c0c0c0);
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  cursor: pointer;
+}
+
+.fx-control input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filter-select {
+  padding: 0.5rem;
+  border: 2px solid #808080;
+  border-top-color: #000;
+  border-left-color: #000;
+  background: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+}
+
+.filter-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #808080;
+  transition: .2s;
+  border: 2px solid #000;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 2px;
+  bottom: 2px;
+  background: linear-gradient(to bottom, #dfdfdf, #c0c0c0);
+  transition: .2s;
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+}
+
+input:checked + .toggle-slider {
+  background-color: #00d47e;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(30px);
+  background: linear-gradient(to bottom, #00ff9d, #00d47e);
+}
+
+/* Scrollbar */
+.effects-content::-webkit-scrollbar {
+  width: 16px;
+}
+
+.effects-content::-webkit-scrollbar-track {
+  background: #c0c0c0;
+  border: 2px solid #808080;
+}
+
+.effects-content::-webkit-scrollbar-thumb {
+  background: #808080;
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+}
+
+.effects-content::-webkit-scrollbar-thumb:hover {
+  background: #606060;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .effects-container {
+    padding: 1rem;
+  }
+  
+  .fx-module h3 {
+    font-size: 0.6rem;
+  }
+  
+  .fx-control label {
+    font-size: 0.5rem;
+  }
+  
+  .source-buttons {
+    flex-direction: column;
+  }
+  
+  .source-btn, .file-upload-btn, .play-btn {
+    width: 100%;
+  }
+}

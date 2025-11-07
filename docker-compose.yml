@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  music-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: music-studio
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    # 可选：挂载卷用于持久化
+    # volumes:
+    #   - ./data:/data

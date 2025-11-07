@@ -1,0 +1,245 @@
+.drumkit-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2d1b69 0%, #1a0f3e 100%);
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+}
+
+.window-96 {
+  background: #c0c0c0;
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  box-shadow: 2px 2px 0px #000;
+  max-width: 900px;
+  width: 100%;
+}
+
+.window-title-bar {
+  background: linear-gradient(to bottom, #0a0a82, #000080);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.close-btn {
+  background: #c0c0c0;
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  width: 30px;
+  height: 30px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #000;
+  font-family: Arial;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-btn:active {
+  border: 2px solid #000;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.export-btn {
+  background: linear-gradient(to bottom, #00ff9d, #00d47e) !important;
+  color: #000 !important;
+  font-weight: bold;
+}
+
+.export-btn:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #00ffaa, #00e08b) !important;
+  transform: translateY(-2px);
+}
+
+.export-btn:disabled {
+  background: #808080 !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.format-select {
+  padding: 0.5rem;
+  border: 2px solid #808080;
+  border-top-color: #000;
+  border-left-color: #000;
+  background: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  cursor: pointer;
+  min-width: 180px;
+}
+
+.format-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e0e0e0;
+}
+
+.window-content {
+  padding: 1.5rem;
+  background: #008080;
+}
+
+.controls-panel {
+  background: #c0c0c0;
+  border: 2px solid #000;
+  border-left-color: #808080;
+  border-top-color: #808080;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.control-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-btn {
+  background: #c0c0c0;
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.7rem;
+  cursor: pointer;
+  color: #000;
+  font-family: 'Press Start 2P', monospace;
+  transition: all 0.1s;
+}
+
+.control-btn:hover {
+  background: #d4d4d4;
+}
+
+.control-btn:active {
+  border: 2px solid #000;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-btn.recording {
+  background: #ff6b9d;
+  color: #fff;
+  animation: pulse 1s infinite;
+}
+
+.control-btn.active {
+  background: #00d4ff;
+  color: #000;
+}
+
+.bpm-slider {
+  flex: 1;
+  min-width: 200px;
+}
+
+.drum-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.drum-pad {
+  aspect-ratio: 1;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border: 4px solid;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.drum-pad::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(145deg, rgba(255,255,255,0.1), transparent);
+}
+
+.drum-pad:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.7);
+}
+
+.drum-pad:active,
+.drum-pad.active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+  filter: brightness(1.5);
+}
+
+.drum-name {
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.drum-key {
+  font-size: 0.7rem;
+  color: #b8b8d1;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.keyboard-hint {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .drum-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .control-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
