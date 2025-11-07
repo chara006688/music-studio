@@ -375,7 +375,6 @@ docker build -t music-studio .
 - 📙 [导出格式指南](EXPORT-FORMATS.md) - WebM/WAV/OGG详解
 - 📗 [Docker部署指南](README-DOCKER.md) - 完整部署文档
 - 📕 [版本管理指南](VERSION-GUIDE.md) - 语义化版本控制
-- 📓 [测试清单](TEST-CHECKLIST.md) - 完整测试用例
 
 ### Bug修复日志
 
@@ -490,7 +489,7 @@ docker build -t music-studio .
 
 - **Issues**: [GitHub Issues](https://github.com/yourusername/music-studio/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/music-studio/discussions)
-- **Email**: your.email@example.com
+- **Email**: 3987263115@qq.com
 
 ---
 
