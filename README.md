@@ -9,7 +9,7 @@
 
 **一个复古风格的在线音乐工作站 | A Retro-style Online Music Production Studio**
 
-[✨ 在线演示](#) | [📖 文档](#documentation) | [🐳 Docker](#docker-deployment) | [🤝 贡献](#contributing)
+[✨ 在线演示](http://125.208.21.128:11525/) | [📖 文档](#documentation) | [🐳 Docker](#docker-deployment) | [🤝 贡献](#contributing)
 
 ![Screenshot](https://via.placeholder.com/800x400/008080/FFFFFF?text=Music+Studio+Screenshot)
 
