@@ -382,7 +382,7 @@ function DrumKit() {
       clearInterval(metronomeInterval.current);
       startMetronome();
     }
-  }, [bpm]);
+  }, [bpm, metronomeActive, startMetronome]);
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -397,7 +397,7 @@ function DrumKit() {
       window.removeEventListener('keydown', handleKeyPress);
       if (metronomeInterval.current) clearInterval(metronomeInterval.current);
     };
-  }, [isRecording]);
+  }, [isRecording, drums, handleDrumClick]);
 
   return (
     <div className="drumkit-container">

@@ -27,7 +27,6 @@ function Visualizer() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
     
     const resizeCanvas = () => {
       const parent = canvas.parentElement;
@@ -70,7 +69,7 @@ function Visualizer() {
             sourceRef.current.oscillator1.stop();
             sourceRef.current.oscillator2.stop();
             sourceRef.current.lfo.stop();
-          } catch (e) {
+          } catch {
             // 忽略已经停止的错误
           }
         } else if (sourceRef.current.type === 'file') {
@@ -86,6 +85,14 @@ function Visualizer() {
       setDuration(0);
       setIsPlaying(false);
       setIsPaused(false);
+      
+      // 自动获取音频时长
+      if (audioElementRef.current) {
+        audioElementRef.current.src = url;
+        audioElementRef.current.addEventListener('loadedmetadata', () => {
+          setDuration(audioElementRef.current.duration);
+        }, { once: true });
+      }
     }
   };
 
@@ -122,7 +129,9 @@ function Visualizer() {
       // 断开旧的连接
       try {
         analyser.disconnect();
-      } catch (e) {}
+      } catch {
+        // 忽略断开连接错误
+      }
       
       const source = audioContext.createMediaElementSource(audioElement);
       source.connect(analyser);
@@ -695,10 +704,10 @@ function Visualizer() {
               type="range"
               className="progress-bar"
               min="0"
-              max={duration || 0}
+              max={duration || 1}
               value={currentTime}
               onChange={handleProgressChange}
-              disabled={!audioFile || !duration}
+              disabled={!audioFile}
             />
             <span className="time-display">
               {audioFile ? formatTime(duration) : '∞'}

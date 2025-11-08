@@ -298,7 +298,7 @@ function Effects() {
     if (isPlaying && reverb.enabled) {
       createReverbImpulse();
     }
-  }, [reverb.duration, reverb.intensity]);
+  }, [reverb.duration, reverb.intensity, isPlaying, reverb.enabled, createReverbImpulse]);
 
   useEffect(() => {
     if (!delayNodeRef.current) return;

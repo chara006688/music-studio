@@ -142,7 +142,7 @@ function Piano() {
           delete oscillatorsRef.current[noteKey];
           delete gainNodesRef.current[noteKey];
         }
-      } catch (e) {
+      } catch {
         // Oscillator可能已经停止
       }
     }, release * 1000 + 100);
@@ -175,7 +175,7 @@ function Piano() {
     if (!sustain) {
       stopAllNotes();
     }
-  }, [sustain]);
+  }, [sustain, stopAllNotes]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -220,7 +220,7 @@ function Piano() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [selectedOctave, sustain]);
+  }, [selectedOctave, sustain, keyMap, playNote, stopNote]);
 
   useEffect(() => {
     return () => {
@@ -229,7 +229,7 @@ function Piano() {
         audioContextRef.current.close();
       }
     };
-  }, []);
+  }, [stopAllNotes]);
 
   const isBlackKey = (note) => {
     return note.includes('#');
