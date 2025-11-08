@@ -21,9 +21,15 @@ function Visualizer() {
   const [songName, setSongName] = useState('内置合成音乐');
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [isLooping, setIsLooping] = useState(true);
+  const [exportFormat, setExportFormat] = useState('auto');
+  const [showProgressDuringExport, setShowProgressDuringExport] = useState(true);
   const audioElementRef = useRef(null);
   const renderParamsRef = useRef({ speed: 1, density: 128, hue: 280, brightness: 1 });
   const visualModeRef = useRef('bars');
+  const mediaRecorderRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -643,6 +649,181 @@ function Visualizer() {
     setIsPaused(false);
   };
 
+  const exportVideo = async () => {
+    if (!audioFile || !duration) {
+      alert('请先上传音频文件');
+      return;
+    }
+
+    setIsExporting(true);
+    setExportProgress(0);
+
+    try {
+      const canvas = canvasRef.current;
+      const stream = canvas.captureStream(30); // 30 FPS
+      
+      // 创建新的音频元素和分析器用于导出
+      const exportAudio = new Audio(audioFile);
+      const exportAudioContext = new AudioContext();
+      const exportSource = exportAudioContext.createMediaElementSource(exportAudio);
+      const exportAnalyser = exportAudioContext.createAnalyser();
+      exportAnalyser.fftSize = 2048;
+      const dest = exportAudioContext.createMediaStreamDestination();
+      
+      // 连接音频节点：source -> analyser -> destination 和 dest
+      exportSource.connect(exportAnalyser);
+      exportAnalyser.connect(exportAudioContext.destination);
+      exportAnalyser.connect(dest);
+      
+      // 合并视频和音频流
+      const audioTrack = dest.stream.getAudioTracks()[0];
+      stream.addTrack(audioTrack);
+      
+      // 临时保存原有的分析器，使用导出专用的分析器
+      const originalAnalyser = analyserRef.current;
+      analyserRef.current = exportAnalyser;
+      
+      // 启动可视化动画
+      if (!animationRef.current) {
+        visualize();
+      }
+      
+      // 定义所有可能的视频编码格式（包含音频编码）
+      const allFormats = [
+        { id: 'vp9', mimeType: 'video/webm;codecs=vp9,opus', ext: 'webm', name: 'WebM (VP9+Opus)' },
+        { id: 'vp8', mimeType: 'video/webm;codecs=vp8,opus', ext: 'webm', name: 'WebM (VP8+Opus)' },
+        { id: 'vp9-vorbis', mimeType: 'video/webm;codecs=vp9,vorbis', ext: 'webm', name: 'WebM (VP9+Vorbis)' },
+        { id: 'vp8-vorbis', mimeType: 'video/webm;codecs=vp8,vorbis', ext: 'webm', name: 'WebM (VP8+Vorbis)' },
+        { id: 'webm', mimeType: 'video/webm', ext: 'webm', name: 'WebM' },
+        { id: 'mp4', mimeType: 'video/mp4', ext: 'mp4', name: 'MP4' }
+      ];
+      
+      let selectedFormat = null;
+      
+      if (exportFormat === 'auto') {
+        // 自动选择第一个支持的格式
+        for (const format of allFormats) {
+          if (MediaRecorder.isTypeSupported(format.mimeType)) {
+            selectedFormat = format;
+            console.log('自动选择编码格式:', format.mimeType);
+            break;
+          }
+        }
+      } else {
+        // 使用用户选择的格式
+        const userFormat = allFormats.find(f => f.id === exportFormat);
+        if (userFormat && MediaRecorder.isTypeSupported(userFormat.mimeType)) {
+          selectedFormat = userFormat;
+          console.log('使用用户选择的编码格式:', userFormat.mimeType);
+        } else {
+          throw new Error(`浏览器不支持所选格式: ${userFormat?.name || exportFormat}`);
+        }
+      }
+      
+      if (!selectedFormat) {
+        throw new Error('浏览器不支持视频录制功能');
+      }
+      
+      const chunks = [];
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: selectedFormat.mimeType,
+        videoBitsPerSecond: 5000000
+      });
+      
+      mediaRecorderRef.current = mediaRecorder;
+      
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.push(e.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: selectedFormat.mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${songName}_visualization.${selectedFormat.ext}`;
+        a.click();
+        
+        // 延迟清理，避免浏览器崩溃
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 1000);
+        
+        // 恢复原有的分析器
+        analyserRef.current = originalAnalyser;
+        
+        // 停止动画循环
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+          animationRef.current = null;
+        }
+        
+        setIsExporting(false);
+        setExportProgress(0);
+        
+        // 延迟清理音频资源
+        setTimeout(() => {
+          try {
+            exportAudio.pause();
+            exportAudio.src = '';
+            exportAudioContext.close();
+          } catch (err) {
+            console.error('清理资源时出错:', err);
+          }
+        }, 100);
+      };
+      
+      // 开始录制
+      mediaRecorder.start();
+      
+      // 播放音频并更新进度
+      exportAudio.currentTime = 0;
+      exportAudio.play();
+      
+      // 监听播放进度（同时更新导出进度和界面进度条）
+      const progressInterval = setInterval(() => {
+        const progress = (exportAudio.currentTime / duration) * 100;
+        setExportProgress(progress);
+        
+        // 如果启用了进度条显示，同步更新界面进度条
+        if (showProgressDuringExport) {
+          setCurrentTime(exportAudio.currentTime);
+        }
+        
+        if (exportAudio.ended || exportAudio.currentTime >= duration) {
+          clearInterval(progressInterval);
+          mediaRecorder.stop();
+        }
+      }, 100);
+      
+      // 确保音频播放完成后停止录制
+      exportAudio.onended = () => {
+        clearInterval(progressInterval);
+        setTimeout(() => {
+          if (mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+        }, 500);
+      };
+      
+    } catch (error) {
+      console.error('导出失败:', error);
+      alert('导出失败: ' + error.message);
+      setIsExporting(false);
+      setExportProgress(0);
+    }
+  };
+
+  const cancelExport = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    setIsExporting(false);
+    setExportProgress(0);
+  };
+
   return (
     <div className="visualizer-container">
       <div className="window-96 visualizer-window">
@@ -677,6 +858,36 @@ function Visualizer() {
                 style={{ display: 'none' }}
               />
             </label>
+
+            <select 
+              className="toolbar-btn format-select"
+              value={exportFormat}
+              onChange={(e) => setExportFormat(e.target.value)}
+              disabled={isExporting}
+            >
+              <option value="auto">自动选择格式</option>
+              <option value="vp9">WebM (VP9)</option>
+              <option value="vp8">WebM (VP8)</option>
+              <option value="webm">WebM</option>
+              <option value="mp4">MP4</option>
+            </select>
+
+            <button 
+              className="toolbar-btn"
+              onClick={exportVideo}
+              disabled={!audioFile || isExporting}
+            >
+              {isExporting ? `⏳ 导出中 ${exportProgress.toFixed(0)}%` : '🎬 导出视频'}
+            </button>
+
+            {isExporting && (
+              <button 
+                className="toolbar-btn"
+                onClick={cancelExport}
+              >
+                ❌ 取消
+              </button>
+            )}
           </div>
 
           <div className="mode-selector">
@@ -722,7 +933,7 @@ function Visualizer() {
         <div className="canvas-wrapper">
           <canvas ref={canvasRef} className="visualizer-canvas"></canvas>
           {audioFile && (
-            <audio ref={audioElementRef} src={audioFile} loop />
+            <audio ref={audioElementRef} src={audioFile} loop={isLooping} />
           )}
         </div>
 
@@ -737,11 +948,29 @@ function Visualizer() {
               max={duration || 1}
               value={currentTime}
               onChange={handleProgressChange}
-              disabled={!audioFile}
+              disabled={!audioFile || (isExporting && !showProgressDuringExport)}
             />
             <span className="time-display">
               {audioFile ? formatTime(duration) : '∞'}
             </span>
+          </div>
+          <div className="loop-control">
+            <label className="loop-checkbox">
+              <input
+                type="checkbox"
+                checked={isLooping}
+                onChange={(e) => setIsLooping(e.target.checked)}
+              />
+              <span>🔁 循环播放</span>
+            </label>
+            <label className="loop-checkbox">
+              <input
+                type="checkbox"
+                checked={!showProgressDuringExport}
+                onChange={(e) => setShowProgressDuringExport(!e.target.checked)}
+              />
+              <span>🚫 导出时禁用进度条</span>
+            </label>
           </div>
         </div>
 
