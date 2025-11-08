@@ -6,7 +6,9 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-61dafb.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ed.svg)
+
 [![Docker Build and Publish](https://github.com/chara006688/music-studio/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/chara006688/music-studio/actions/workflows/docker-publish.yml)
+[![Test Build](https://github.com/chara006688/music-studio/actions/workflows/test.yml/badge.svg)](https://github.com/chara006688/music-studio/actions/workflows/test.yml)
 
 **一个复古风格的在线音乐工作站 | A Retro-style Online Music Production Studio**
 
