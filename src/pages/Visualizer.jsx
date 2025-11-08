@@ -79,44 +79,48 @@ function Visualizer() {
       }
       
       const url = URL.createObjectURL(file);
-      setAudioFile(url);
       setSongName(file.name.replace(/\.[^/.]+$/, ''));
       setCurrentTime(0);
       setDuration(0);
       setIsPlaying(false);
       setIsPaused(false);
       
-      // 自动获取音频时长
-      if (audioElementRef.current) {
-        audioElementRef.current.src = url;
-        
-        // 添加多个事件监听器以确保获取时长
-        const handleLoadedMetadata = () => {
-          if (audioElementRef.current && audioElementRef.current.duration && isFinite(audioElementRef.current.duration)) {
-            setDuration(audioElementRef.current.duration);
-            console.log('Duration loaded:', audioElementRef.current.duration);
-          }
-        };
-        
-        const handleCanPlay = () => {
-          if (audioElementRef.current && audioElementRef.current.duration && isFinite(audioElementRef.current.duration)) {
-            setDuration(audioElementRef.current.duration);
-            console.log('Duration from canplay:', audioElementRef.current.duration);
-          }
-        };
-        
-        const handleError = (e) => {
-          console.error('Audio loading error:', e);
-          console.error('File format may not be supported by browser');
-        };
-        
-        audioElementRef.current.addEventListener('loadedmetadata', handleLoadedMetadata, { once: true });
-        audioElementRef.current.addEventListener('canplay', handleCanPlay, { once: true });
-        audioElementRef.current.addEventListener('error', handleError, { once: true });
-        
-        // 强制加载音频元数据
-        audioElementRef.current.load();
-      }
+      // 先设置 audioFile，确保 audio 元素被渲染
+      setAudioFile(url);
+      
+      // 使用 setTimeout 确保 audio 元素已经渲染到 DOM
+      setTimeout(() => {
+        if (audioElementRef.current) {
+          audioElementRef.current.src = url;
+          
+          // 添加多个事件监听器以确保获取时长
+          const handleLoadedMetadata = () => {
+            if (audioElementRef.current && audioElementRef.current.duration && isFinite(audioElementRef.current.duration)) {
+              setDuration(audioElementRef.current.duration);
+              console.log('Duration loaded:', audioElementRef.current.duration);
+            }
+          };
+          
+          const handleCanPlay = () => {
+            if (audioElementRef.current && audioElementRef.current.duration && isFinite(audioElementRef.current.duration)) {
+              setDuration(audioElementRef.current.duration);
+              console.log('Duration from canplay:', audioElementRef.current.duration);
+            }
+          };
+          
+          const handleError = (e) => {
+            console.error('Audio loading error:', e);
+            console.error('File format may not be supported by browser');
+          };
+          
+          audioElementRef.current.addEventListener('loadedmetadata', handleLoadedMetadata, { once: true });
+          audioElementRef.current.addEventListener('canplay', handleCanPlay, { once: true });
+          audioElementRef.current.addEventListener('error', handleError, { once: true });
+          
+          // 强制加载音频元数据
+          audioElementRef.current.load();
+        }
+      }, 0);
     }
   };
 
