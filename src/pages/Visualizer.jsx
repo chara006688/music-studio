@@ -695,10 +695,10 @@ function Visualizer() {
               type="range"
               className="progress-bar"
               min="0"
-              max={duration || 100}
+              max={duration || 0}
               value={currentTime}
               onChange={handleProgressChange}
-              disabled={!audioFile}
+              disabled={!audioFile || !duration}
             />
             <span className="time-display">
               {audioFile ? formatTime(duration) : '∞'}
