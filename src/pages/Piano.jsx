@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMemo, useCallback } from 'react';
 import './Piano.css';
 
 function Piano() {
@@ -20,17 +21,17 @@ function Piano() {
   const oscillatorsRef = useRef({});
   const gainNodesRef = useRef({});
 
-  const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const notes = useMemo(() => ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'], []);
   
   // Keyboard mapping (2 octaves)
-  const keyMap = {
+  const keyMap = useMemo(() => ({
     // Lower octave
     'a': 'C', 'w': 'C#', 's': 'D', 'e': 'D#', 'd': 'E', 'f': 'F',
     't': 'F#', 'g': 'G', 'y': 'G#', 'h': 'A', 'u': 'A#', 'j': 'B',
     // Higher octave
     'k': 'C+', 'o': 'C#+', 'l': 'D+', 'p': 'D#+', ';': 'E+', "'": 'F+',
     ']': 'F#+', 'z': 'G+', 'x': 'G#+', 'c': 'A+', 'v': 'A#+', 'b': 'B+'
-  };
+  }), []);
 
   const getAudioContext = () => {
     if (!audioContextRef.current) {
@@ -39,7 +40,7 @@ function Piano() {
     return audioContextRef.current;
   };
 
-  const getNoteFrequency = (note, octave) => {
+  const getNoteFrequency = useCallback((note, octave) => {
     const noteIndex = notes.indexOf(note);
     if (noteIndex === -1) return 0;
     
@@ -50,7 +51,7 @@ function Piano() {
     const semitonesFromA4 = midiNote - A4Index;
     
     return A4 * Math.pow(2, semitonesFromA4 / 12);
-  };
+  }, [notes]);
 
   const getWaveType = (timbre) => {
     const waveTypes = {
@@ -62,7 +63,7 @@ function Piano() {
     return waveTypes[timbre] || 'sine';
   };
 
-  const playNote = (note, octave) => {
+  const playNote = useCallback((note, octave) => {
     const ctx = getAudioContext();
     const noteKey = `${note}-${octave}`;
     
@@ -110,9 +111,9 @@ function Piano() {
     gainNodesRef.current[noteKey] = gainNode;
     
     setActiveNotes(prev => new Set(prev).add(noteKey));
-  };
+  }, [timbre, volume, attack, decay, sustainLevel, getNoteFrequency]);
 
-  const stopNote = (note, octave) => {
+  const stopNote = useCallback((note, octave) => {
     const noteKey = `${note}-${octave}`;
     const oscillator = oscillatorsRef.current[noteKey];
     const gainNode = gainNodesRef.current[noteKey];
@@ -146,7 +147,7 @@ function Piano() {
         // Oscillator可能已经停止
       }
     }, release * 1000 + 100);
-  };
+  }, [release]);
 
   const handleNoteMouseDown = (note, octave) => {
     playNote(note, octave);
@@ -164,12 +165,12 @@ function Piano() {
     }
   };
 
-  const stopAllNotes = () => {
+  const stopAllNotes = useCallback(() => {
     Object.keys(oscillatorsRef.current).forEach(noteKey => {
       const [note, octave] = noteKey.split('-');
       stopNote(note, parseInt(octave));
     });
-  };
+  }, [stopNote]);
 
   useEffect(() => {
     if (!sustain) {

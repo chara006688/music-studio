@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DrumKit.css';
 
@@ -15,7 +15,7 @@ function DrumKit() {
   const metronomeInterval = useRef(null);
   const audioContextRef = useRef(null);
 
-  const drums = [
+  const drums = useMemo(() => [
     { id: 'kick', name: 'Kick', key: 'A', color: '#ff6b9d' },
     { id: 'snare', name: 'Snare', key: 'S', color: '#ff9d6b' },
     { id: 'hihat', name: 'Hi-Hat', key: 'D', color: '#ffd700' },
@@ -24,7 +24,7 @@ function DrumKit() {
     { id: 'crash', name: 'Crash', key: 'H', color: '#6bff9d' },
     { id: 'ride', name: 'Ride', key: 'J', color: '#ff6bf0' },
     { id: 'clap', name: 'Clap', key: 'K', color: '#6bd4ff' },
-  ];
+  ], []);
 
   const getAudioContext = () => {
     if (!audioContextRef.current) {
@@ -33,7 +33,7 @@ function DrumKit() {
     return audioContextRef.current;
   };
 
-  const playSound = (drumId) => {
+  const playSound = useCallback((drumId) => {
     const audioContext = getAudioContext();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -66,7 +66,7 @@ function DrumKit() {
       const timestamp = Date.now() - recordingStartTime.current;
       setRecordedBeats(prev => [...prev, { drumId, timestamp }]);
     }
-  };
+  }, [isRecording]);
 
   const exportRecording = async () => {
     if (recordedBeats.length === 0) return;
@@ -314,12 +314,12 @@ function DrumKit() {
     return new Blob([bufferArray], { type: 'audio/wav' });
   };
 
-  const handleDrumClick = (drumId) => {
+  const handleDrumClick = useCallback((drumId) => {
     playSound(drumId);
     const element = document.getElementById(drumId);
     element.classList.add('active');
     setTimeout(() => element.classList.remove('active'), 100);
-  };
+  }, [playSound]);
 
   const toggleRecording = () => {
     if (!isRecording) {
@@ -348,7 +348,7 @@ function DrumKit() {
     setTimeout(() => setIsPlaying(false), lastBeat.timestamp + 500);
   };
 
-  const startMetronome = () => {
+  const startMetronome = useCallback(() => {
     const interval = (60 / bpm) * 1000;
     metronomeInterval.current = setInterval(() => {
       const audioContext = new AudioContext();
@@ -365,7 +365,7 @@ function DrumKit() {
       oscillator.start();
       oscillator.stop(audioContext.currentTime + 0.05);
     }, interval);
-  };
+  }, [bpm]);
 
   const toggleMetronome = () => {
     if (!metronomeActive) {

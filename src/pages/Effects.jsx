@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Effects.css';
 
@@ -107,7 +107,7 @@ function Effects() {
     gainNodeRef.current.gain.value = 1.0;
   };
 
-  const createReverbImpulse = () => {
+  const createReverbImpulse = useCallback(() => {
     const ctx = getAudioContext();
     const rate = ctx.sampleRate;
     const length = rate * reverb.duration;
@@ -121,7 +121,7 @@ function Effects() {
     }
     
     reverbNodeRef.current.buffer = impulse;
-  };
+  }, [reverb.duration]);
 
   const makeDistortionCurve = (amount) => {
     const k = amount;

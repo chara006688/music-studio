@@ -89,9 +89,33 @@ function Visualizer() {
       // 自动获取音频时长
       if (audioElementRef.current) {
         audioElementRef.current.src = url;
-        audioElementRef.current.addEventListener('loadedmetadata', () => {
-          setDuration(audioElementRef.current.duration);
-        }, { once: true });
+        
+        // 添加多个事件监听器以确保获取时长
+        const handleLoadedMetadata = () => {
+          if (audioElementRef.current && audioElementRef.current.duration && isFinite(audioElementRef.current.duration)) {
+            setDuration(audioElementRef.current.duration);
+            console.log('Duration loaded:', audioElementRef.current.duration);
+          }
+        };
+        
+        const handleCanPlay = () => {
+          if (audioElementRef.current && audioElementRef.current.duration && isFinite(audioElementRef.current.duration)) {
+            setDuration(audioElementRef.current.duration);
+            console.log('Duration from canplay:', audioElementRef.current.duration);
+          }
+        };
+        
+        const handleError = (e) => {
+          console.error('Audio loading error:', e);
+          console.error('File format may not be supported by browser');
+        };
+        
+        audioElementRef.current.addEventListener('loadedmetadata', handleLoadedMetadata, { once: true });
+        audioElementRef.current.addEventListener('canplay', handleCanPlay, { once: true });
+        audioElementRef.current.addEventListener('error', handleError, { once: true });
+        
+        // 强制加载音频元数据
+        audioElementRef.current.load();
       }
     }
   };
@@ -118,7 +142,7 @@ function Visualizer() {
         sourceRef.current.oscillator1.stop();
         sourceRef.current.oscillator2.stop();
         sourceRef.current.lfo.stop();
-      } catch (e) {
+      } catch {
         // 忽略已停止的错误
       }
       sourceRef.current = null;
@@ -196,7 +220,7 @@ function Visualizer() {
         sourceRef.current.oscillator1.stop();
         sourceRef.current.oscillator2.stop();
         sourceRef.current.lfo.stop();
-      } catch (e) {
+      } catch {
         // 忽略已经停止的错误
       }
       sourceRef.current = null;
@@ -205,7 +229,9 @@ function Visualizer() {
     // 断开旧的连接
     try {
       analyser.disconnect();
-    } catch (e) {}
+    } catch {
+      // 忽略断开连接错误
+    }
 
     const oscillator1 = audioContext.createOscillator();
     const oscillator2 = audioContext.createOscillator();
